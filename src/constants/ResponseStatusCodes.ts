@@ -1,4 +1,4 @@
-export enum ResponseStatusCodes {
+export enum ResponseStatusCodeConst {
   NOT_FOUND = 'NOT_FOUND',
   BAD_REQUEST = 'BAD_REQUEST',
   VALIDATION_FAILED = 'VALIDATION_FAILED',
