@@ -5,6 +5,10 @@ import { PrismaService } from 'src/prisma/services/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { AppLogger } from 'src/shared/utils/AppLogger';
+import {
+  IUserPaginationOptions,
+  PaginationResult,
+} from 'src/shared/interfaces/pagination.interface';
 
 @Injectable()
 export class UsersService {
@@ -57,5 +61,15 @@ export class UsersService {
     } catch (e) {
       throw new ServerAppException(ResponseMessages.USER_DELETE_FAILED, e);
     }
+  }
+
+  async findAll(
+    params: IUserPaginationOptions,
+  ): Promise<PaginationResult<User>> {
+    const items = await this.prisma.user.findMany({ ...params });
+
+    const count = await this.prisma.user.count();
+
+    return { items, count };
   }
 }
