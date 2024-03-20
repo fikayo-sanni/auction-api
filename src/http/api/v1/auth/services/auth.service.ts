@@ -44,8 +44,10 @@ export class AuthService {
 
   async signIn(auth: AuthSignInDto): Promise<User> {
     try {
+      // fetch user by email
       const user = await this.usersService.findByEmail(auth.email);
 
+      // if user does not exist or password doesnt match, throw login failure
       if (!user || user.password !== hashString(auth.password)) {
         throw new UnAuthorizedAppException(ResponseMessages.USER_LOGIN_FAILED);
       }
@@ -81,6 +83,7 @@ export class AuthService {
       ),
     ]);
 
+    await this.usersService.update({ id }, { refresh_token });
     return {
       access_token,
       refresh_token,
