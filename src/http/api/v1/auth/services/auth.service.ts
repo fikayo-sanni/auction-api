@@ -62,6 +62,7 @@ export class AuthService {
   }
 
   async getTokens(id: string) {
+    // generate 7h access token and 7d refresh token
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -83,10 +84,22 @@ export class AuthService {
       ),
     ]);
 
+    // update user record to contain refresh token
     await this.usersService.update({ id }, { refresh_token });
     return {
       access_token,
       refresh_token,
     };
   }
+
+  async logout(id: string) {
+    // nullify user's refresh token
+    return this.usersService.update({ id }, { refresh_token: null });
+  }
+
+  // TODO: create forgotPassword
+  async forgotPassword() {}
+
+  // TODO: implement changePassword
+  async changePassword() {}
 }
