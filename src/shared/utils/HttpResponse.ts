@@ -68,8 +68,8 @@ export class HttpResponse {
     return this;
   }
 
-  send(req: Request, res: Response) {
-    return res.status(this.serverCode).send(this.buildResponseBody(req));
+  send(res: Response) {
+    return res.status(this.serverCode).send(this.buildResponseBody());
   }
 
   sendResponseBody(res: Response, body: any) {
@@ -78,18 +78,14 @@ export class HttpResponse {
       .send({ statusCode: this.statusCode, message: this.message, ...body });
   }
 
-  getBody(req: Request) {
-    return this.buildResponseBody(req);
+  getBody() {
+    return this.buildResponseBody();
   }
 
-  private buildResponseBody(req: Request) {
+  private buildResponseBody() {
     const appconfiguration = appConfig();
     const response: Record<string, unknown> = { statusCode: this.statusCode };
     response[this.dataKey] = this.data;
-    if (this.message && this.translateMessage) {
-      const lang = HttpResponse.getLanguageFromReq(req);
-      this.message = this.translator.translate(this.message, { lang: lang });
-    }
 
     response['message'] = this.message;
     if (appconfiguration.NODE_ENV !== 'production') {
@@ -111,14 +107,8 @@ export class HttpResponse {
       statusCode: exception.statusCode,
     };
 
-    if (exception.translateMessage) {
-      const lang = HttpResponse.getLanguageFromReq(req);
-      response['message'] = this.translator.translate(exception.message, {
-        lang: lang,
-      });
-    } else {
-      response['message'] = exception.message;
-    }
+    response['message'] = exception.message;
+
     if (process.env.NODE_ENV !== 'production') {
       response['devMessage'] = exception.devMessage ?? exception.stack;
     } else {
@@ -136,11 +126,6 @@ export class HttpResponse {
   sendNotHandledException(exception: Error, req: Request, res: Response) {
     const appconfiguration = appConfig();
     const response: Record<string, unknown> = { data: null };
-    const lang = HttpResponse.getLanguageFromReq(req);
-
-    response['message'] = this.translator.translate('messages_server_error', {
-      lang: lang,
-    });
 
     if (appconfiguration.NODE_ENV !== 'production') {
       response['devMessage'] = exception.stack ?? null;
@@ -163,13 +148,5 @@ export class HttpResponse {
       response['statusCode'] = ResponseStatusCodeConst.SERVER_ERROR;
     }
     return res.status(statusCode).send(response);
-  }
-
-  private static getLanguageFromReq(req: any) {
-    const lang = req.headers['accept-language'];
-    if (lang !== 'en' && lang !== 'ar') {
-      return 'en';
-    }
-    return lang;
   }
 }
