@@ -5,6 +5,7 @@ export enum ResponseMessages {
   INVALID_REQUEST_DATA = 'invalid_request_data',
   EXPIRED = 'resource_has_expired',
   NOT_ALLOWED = 'operation_not_allowed',
+  CREDENTIALS_IN_USE = 'sigup_credentials_in_use',
   UNAUTHORIZED = 'unauthorized',
   FORMAT_NOT_SUPPORTED = 'format_not_supported',
   USER_DELETE_FAILED = 'user_deletion_failed',
