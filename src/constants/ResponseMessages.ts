@@ -7,4 +7,7 @@ export enum ResponseMessages {
   NOT_ALLOWED = 'operation_not_allowed',
   UNAUTHORIZED = 'unauthorized',
   FORMAT_NOT_SUPPORTED = 'format_not_supported',
+  USER_DELETE_FAILED = 'user_deletion_failed',
+  USER_UPDATE_FAILED = 'user_update_failed',
+  USER_LOGIN_FAILED = 'invalid_login_credentials',
 }
