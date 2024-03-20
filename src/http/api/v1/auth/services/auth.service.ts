@@ -9,8 +9,8 @@ import { AuthSignUpDto } from '../dtos/auth.signup.dto';
 import { BadRequestAppException } from 'src/shared/exceptions/BadRequestAppException';
 import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { AuthSignInDto } from '../dtos/auth.signin.dto';
-import { Hash } from 'crypto';
 import { hashString } from 'src/shared/utils/Hash';
+import { UnAuthorizedAppException } from 'src/shared/exceptions/UnAuthorizedAppException';
 
 @Injectable()
 export class AuthService {
@@ -38,13 +38,52 @@ export class AuthService {
       return await this.usersService.create(user);
     } catch (e) {
       this.appLogger.logError(e);
+      throw e;
     }
   }
 
-  async signIn(user: AuthSignInDto): Promise<User> {
+  async signIn(auth: AuthSignInDto): Promise<User> {
     try {
+      const user = await this.usersService.findByEmail(auth.email);
+
+      if (!user || user.password !== hashString(auth.password)) {
+        throw new UnAuthorizedAppException(ResponseMessages.USER_LOGIN_FAILED);
+      }
+
+      const tokens = await this.getTokens(user.id);
+
+      return { ...user, ...tokens };
     } catch (e) {
+      this.appLogger.logError(e);
       throw e;
     }
+  }
+
+  async getTokens(id: string) {
+    const [access_token, refresh_token] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: id,
+        },
+        {
+          secret: this.appConfig.JWT_SECRET,
+          expiresIn: '7h',
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: id,
+        },
+        {
+          secret: this.appConfig.JWT_REFRESH_SECRET,
+          expiresIn: '7d',
+        },
+      ),
+    ]);
+
+    return {
+      access_token,
+      refresh_token,
+    };
   }
 }
