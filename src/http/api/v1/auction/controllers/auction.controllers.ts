@@ -20,7 +20,7 @@ export class AuctionController extends BaseAppController {
 
   @UseGuards(AccessTokenGuard)
   @Post('end')
-  async getAuctionHistory(@Res() res: Response) {
+  async endAuction(@Res() res: Response) {
     const result = await this.auctionService.endAuction();
     return this.getHttpResponse().setDataWithKey('data', result).send(res);
   }
@@ -33,9 +33,9 @@ export class AuctionController extends BaseAppController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Post('bid')
-  async withdraw(@Body('amount') amount: number, @Res() res: Response) {
-    const result = await this.auctionService.submitBid(amount);
+  @Post('withdraw')
+  async withdraw(@Res() res: Response) {
+    const result = await this.auctionService.withdraw();
     return this.getHttpResponse().setDataWithKey('data', result).send(res);
   }
 }
