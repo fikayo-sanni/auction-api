@@ -6,19 +6,19 @@ import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { ServerAppException } from 'src/shared/exceptions/ServerAppException';
 import { AuctionContract, AuctionStatus } from 'src/shared/types/auction.types';
 import Web3 from 'web3';
+import { AuctionAbi } from '../abis/auction.abi';
 
 @Injectable()
 export class AuctionService {
   protected appConfig: ConfigType<typeof appConfiguration>;
   private readonly web3: Web3;
   private readonly contract: AuctionContract;
-  private readonly contractAddress;
 
   constructor() {
     // this.contractAddress = this.appConfig.CONTRACT_ADDRESS
     this.appConfig = appConfiguration();
     this.web3 = new Web3(this.appConfig.NODE_PROVIDER_URL);
-    const abi = [];
+    const abi = AuctionAbi;
     this.contract = new this.web3.eth.Contract(
       abi,
       this.appConfig.CONTRACT_ADDRESS,
