@@ -12,7 +12,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "deploy:contract": "npx hardhat run contract-deployment/scripts/deploy.ts --network sepholia",
+    "deploy:contract": "npx hardhat run contract-deployment/scripts/deploy.js --network sepholia",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "db:generate:migration": "npx prisma migrate dev --schema src/prisma/schema.prisma",
     "db:format": "npx prisma format --schema src/prisma/schema.prisma",
