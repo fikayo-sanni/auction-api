@@ -1,8 +1,11 @@
-import { HardhatUserConfig } from 'hardhat/config';
-import '@nomicfoundation/hardhat-toolbox';
+require('@nomiclabs/hardhat-waffle');
 
-const config: HardhatUserConfig = {
-  solidity: '0.8.24',
+module.exports = {
+  networks: {
+    sepholia: {
+      url: `https://sepholia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      accounts: [process.env.ACCOUNR_PRIVATE_KEY],
+    },
+  },
+  solidity: '0.8.0',
 };
-
-export default config;
