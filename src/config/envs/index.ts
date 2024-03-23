@@ -6,6 +6,8 @@ export type ProcessEnv = {
   PORT: number;
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
+  NODE_PROVIDER_URL: string;
+  CONTRACT_ADDRESS: string;
 };
 
 config({
