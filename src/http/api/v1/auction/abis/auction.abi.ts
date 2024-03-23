@@ -1,4 +1,4 @@
-export const abi = [
+export const AuctionAbi = [
   {
     inputs: [
       { internalType: 'uint256', name: '_biddingTime', type: 'uint256' },
