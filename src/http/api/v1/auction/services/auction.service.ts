@@ -13,7 +13,6 @@ export class AuctionService {
   protected appConfig: ConfigType<typeof appConfiguration>;
   private readonly web3: Web3;
   private readonly contract: AuctionContract;
-  private readonly contractAddress;
 
   constructor() {
     // this.contractAddress = this.appConfig.CONTRACT_ADDRESS
