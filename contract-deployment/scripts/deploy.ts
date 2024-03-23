@@ -1,5 +1,4 @@
 import { ethers } from 'hardhat';
-
 async function main() {
   const [deployer] = await ethers.getSigners();
   console.log('Deploying contracts with the account:', deployer.address);
@@ -7,7 +6,7 @@ async function main() {
   const Contract = await ethers.getContractFactory('SimpleAuction');
   const contract = await Contract.deploy();
 
-  console.log('Contract address:', contract.address);
+  console.log('Contract address:', contract);
 }
 
 main()
