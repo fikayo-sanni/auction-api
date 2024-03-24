@@ -57,10 +57,10 @@ $ docker-compose up --build
 $ docker-compose up 
 ```
 
-Both of these methods serve the application over https://localhost:3000
+Both of these methods serve the application over [https://localhost:3000](local deployment)
 
-Remote URL: https://auction-api-2-bwjwsipn3a-uc.a.run.app
-Postman Documentation: https://documenter.getpostman.com/view/778610/2sA35Bc519
+Remote URL: [https://auction-api-2-bwjwsipn3a-uc.a.run.app](Remote Deployment)
+Postman Documentation: [https://documenter.getpostman.com/view/778610/2sA35Bc519](Docs)
 
 ## License
 

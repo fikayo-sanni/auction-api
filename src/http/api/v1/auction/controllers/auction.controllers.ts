@@ -44,16 +44,6 @@ export class AuctionController extends BaseAppController {
     return this.getHttpResponse().setDataWithKey('data', result).send(res);
   }
 
-  @Get(':auction_id/statistics')
-  async getAuctionStatistics(
-    @Param('auction_id') auction_id: string,
-    @Req() req: AuthRequest,
-    @Res() res: Response,
-  ): Promise<any> {
-    const result = await this.auctionService.getAuctionStatistics(auction_id);
-    return this.getHttpResponse().setDataWithKey('data', result).send(res);
-  }
-
   @Post(':auction_id/end')
   async endAuction(
     @Param('auction_id') auction_id: string,
