@@ -86,6 +86,37 @@ export class AuctionService {
     }
   }
 
+  async getAuctionStatistics(auction_id: string): Promise<AuctionStatistics> {
+    try {
+      const total_volume = await this.prisma.history.count({
+        where: {
+          auction_id,
+        },
+      });
+
+      const bids = await this.prisma.history.findMany({
+        where: {
+          auction_id,
+        },
+        select: {
+          bid: true,
+        },
+      });
+
+      const total_value = bids.reduce(
+        (total, bid) => total + parseFloat(bid.bid),
+        0,
+      );
+
+      return { total_value, total_volume };
+    } catch (e) {
+      if (e instanceof BaseAppException) {
+        throw e;
+      }
+      throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
+    }
+  }
+
   async fetchUserWallet(user_id: string): Promise<string> {
     try {
       const user = await this.userService.findById(user_id);

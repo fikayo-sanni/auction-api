@@ -22,6 +22,11 @@ export interface TransactionSender {
   gasPrice?: string;
 }
 
+export interface AuctionStatistics {
+  total_value: number;
+  total_volume: number;
+}
+
 export interface AuctionContract {
   methods: {
     bid(wallet: string): any;
