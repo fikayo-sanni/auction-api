@@ -1,4 +1,3 @@
-// auction.controller.ts
 import { Controller, Get, Post, Body, UseGuards, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AuctionService } from '../services/auction.service';

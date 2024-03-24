@@ -7,20 +7,50 @@ import { AuthSignUpDto } from '../dtos/auth.signup.dto';
 import { AuthSignInDto } from '../dtos/auth.signin.dto';
 import { BadRequestAppException } from 'src/shared/exceptions/BadRequestAppException';
 import { UnAuthorizedAppException } from 'src/shared/exceptions/UnAuthorizedAppException';
+import {
+  mockRegisteredUser,
+  mockSignedInUser,
+  mockUser,
+  mockUserLogin,
+  mockUserTokens,
+} from '../mocks/auth.mock';
+import { hashString } from 'src/shared/utils/Hash';
+import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/services/prisma.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
-  let jwtService: JwtService;
+
+  const mockPrismaService = {
+    user: {
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      upsert: jest.fn(),
+      delete: jest.fn(),
+      updateMany: jest.fn(),
+      count: jest.fn(),
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService, UsersService, JwtService, AppLogger],
+      providers: [
+        AuthService,
+        UsersService,
+        JwtService,
+        AppLogger,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
-    jwtService = module.get<JwtService>(JwtService);
   });
 
   afterEach(() => jest.clearAllMocks());
@@ -31,24 +61,26 @@ describe('AuthService', () => {
 
   describe('signup', () => {
     it('should create a new user', async () => {
-      const user: AuthSignUpDto = {
-        /* mock user data */
-      };
+      const user: AuthSignUpDto = mockUser;
+
       const createUserSpy = jest
         .spyOn(usersService, 'create')
-        .mockResolvedValueOnce(user);
+        .mockResolvedValueOnce(mockRegisteredUser);
 
       const result = await service.signUp(user);
 
-      expect(createUserSpy).toHaveBeenCalledWith(user);
-      expect(result).toEqual(user);
+      expect(createUserSpy).toHaveBeenCalledWith({
+        ...user,
+        password: hashString('password'),
+      });
+      expect(result).toEqual(mockRegisteredUser);
     });
 
     it('should throw BadRequestAppException if email is in use', async () => {
-      const user: AuthSignUpDto = {
-        /* mock user data */
-      };
-      jest.spyOn(usersService, 'findByEmail').mockResolvedValueOnce(user);
+      const user: AuthSignUpDto = mockRegisteredUser;
+      jest
+        .spyOn(usersService, 'findByEmail')
+        .mockResolvedValueOnce(mockRegisteredUser);
 
       await expect(service.signUp(user)).rejects.toThrowError(
         BadRequestAppException,
@@ -58,31 +90,21 @@ describe('AuthService', () => {
 
   describe('signin', () => {
     it('should sign in user and return tokens', async () => {
-      const authData: AuthSignInDto = {
-        /* mock auth data */
-      };
-      const user: User = {
-        /* mock user data */
-      };
+      const authData: AuthSignInDto = mockUserLogin;
+      const user: User = mockSignedInUser;
       jest.spyOn(usersService, 'findByEmail').mockResolvedValueOnce(user);
-      jest.spyOn(service, 'getTokens').mockResolvedValueOnce({
-        access_token: 'mockAccessToken',
-        refresh_token: 'mockRefreshToken',
-      });
+      jest.spyOn(service, 'getTokens').mockResolvedValueOnce(mockUserTokens);
 
       const result = await service.signIn(authData);
 
       expect(result).toEqual({
         ...user,
-        access_token: 'mockAccessToken',
-        refresh_token: 'mockRefreshToken',
+        ...mockUserTokens,
       });
     });
 
     it('should throw UnAuthorizedAppException if user does not exist', async () => {
-      const authData: AuthSignInDto = {
-        /* mock auth data */
-      };
+      const authData: AuthSignInDto = mockUserLogin;
       jest.spyOn(usersService, 'findByEmail').mockResolvedValueOnce(null);
 
       await expect(service.signIn(authData)).rejects.toThrowError(
@@ -91,11 +113,10 @@ describe('AuthService', () => {
     });
 
     it('should throw UnAuthorizedAppException if password is incorrect', async () => {
-      const authData: AuthSignInDto = {
-        /* mock auth data */
-      };
+      const authData: AuthSignInDto = { ...mockUserLogin, password: 'passy' };
       const user: User = {
-        /* mock user data */
+        ...mockSignedInUser,
+        password: 'passy',
       };
       jest.spyOn(usersService, 'findByEmail').mockResolvedValueOnce(user);
 

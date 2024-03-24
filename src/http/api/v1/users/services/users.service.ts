@@ -19,7 +19,7 @@ export class UsersService {
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
     try {
-      return this.prisma.user.create({ data });
+      return await this.prisma.user.create({ data });
     } catch (e) {
       throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
     }
@@ -27,7 +27,9 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     try {
-      return this.prisma.user.findUnique({ where: { id } });
+      const user = await this.prisma.user.findUnique({ where: { id } });
+
+      return user;
     } catch (e) {
       throw new NotFoundAppException(ResponseMessages.NOT_FOUND);
     }
@@ -35,7 +37,9 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     try {
-      return this.prisma.user.findUnique({ where: { email } });
+      const user = await this.prisma.user.findUnique({ where: { email } });
+
+      return user;
     } catch (e) {
       throw new NotFoundAppException(ResponseMessages.NOT_FOUND, e);
     }
