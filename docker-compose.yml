@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=
+      - JWT_SECRET=
+      - JWT_REFRESH_SECRET=
+      - DATABASE_URL=
+      - INFURA_PROJECT_ID=
+      - ACCOUNT_PRIVATE_KEY=
+      - NODE_PROVIDER_URL=

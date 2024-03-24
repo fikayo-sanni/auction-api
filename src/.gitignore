@@ -1,0 +1,15 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
