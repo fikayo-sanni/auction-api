@@ -6,7 +6,6 @@ import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { ServerAppException } from 'src/shared/exceptions/ServerAppException';
 import {
   AuctionContract,
-  AuctionStatistics,
   AuctionStatus,
   TransactionSender,
 } from 'src/shared/types/auction.types';
@@ -68,37 +67,6 @@ export class AuctionService {
       abi,
       address,
     ) as unknown as AuctionContract;
-  }
-
-  async getAuctionStatistics(auction_id: string): Promise<AuctionStatistics> {
-    try {
-      const total_volume = await this.prisma.history.count({
-        where: {
-          auction_id,
-        },
-      });
-
-      const bids = await this.prisma.history.findMany({
-        where: {
-          auction_id,
-        },
-        select: {
-          bid: true,
-        },
-      });
-
-      const total_value = bids.reduce(
-        (total, bid) => total + parseFloat(bid.bid),
-        0,
-      );
-
-      return { total_value, total_volume };
-    } catch (e) {
-      if (e instanceof BaseAppException) {
-        throw e;
-      }
-      throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
-    }
   }
 
   async getSenderInfo(): Promise<TransactionSender> {
