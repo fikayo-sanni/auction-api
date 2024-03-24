@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controllers';
 import { UsersService } from '../users/services/users.service';
 import { PrismaService } from 'src/prisma/services/prisma.service';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 import { AuthService } from './services/auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { SharedModule } from 'src/shared/shared.module';

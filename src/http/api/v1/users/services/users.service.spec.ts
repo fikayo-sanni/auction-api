@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/services/prisma.service';
 import { PaginationResult } from 'src/shared/interfaces/pagination.interface';
 import { mockUser, mockRegisteredUser, mockUserId } from '../mocks/users.mock';
 import { User } from 'next-auth';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 
 describe('UsersService', () => {
   let service: UsersService;

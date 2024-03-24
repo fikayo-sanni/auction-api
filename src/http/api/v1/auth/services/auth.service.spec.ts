@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersService } from '../../users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 import { AuthSignUpDto } from '../dtos/auth.signup.dto';
 import { AuthSignInDto } from '../dtos/auth.signin.dto';
 import { BadRequestAppException } from 'src/shared/exceptions/BadRequestAppException';
@@ -14,7 +14,7 @@ import {
   mockUserLogin,
   mockUserTokens,
 } from '../mocks/auth.mock';
-import { hashString } from 'src/shared/utils/Hash';
+import { hashString } from 'src/shared/utils/hash.utils';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/services/prisma.service';
 

@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { HttpResponse } from 'src/shared/utils/HttpResponse';
+import { HttpResponse } from 'src/shared/utils/http.utils';
 
 export class BaseAppController {
   @Inject(ModuleRef)

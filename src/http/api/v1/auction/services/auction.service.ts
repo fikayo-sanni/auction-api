@@ -7,8 +7,8 @@ import { ServerAppException } from 'src/shared/exceptions/ServerAppException';
 import { AuctionContract, AuctionStatus } from 'src/shared/types/auction.types';
 import Web3, { ContractAbi } from 'web3';
 // import { AuctionAbi } from '../abis/auction.abi';
-import { AppLogger } from 'src/shared/utils/AppLogger';
-import { parseBigInts } from 'src/shared/utils/ParseBigInts';
+import { AppLogger } from 'src/shared/utils/logger.utils';
+import { parseBigInts } from 'src/shared/utils/parser.utils';
 import * as solc from 'solc';
 //   import { AuctionAbi } from '../abis/auction.abi';
 import { DeployContractDto } from '../dtos/auction.deploy.dto';
@@ -18,6 +18,8 @@ import { NotFoundAppException } from 'src/shared/exceptions/NotFoundAppException
 import { Contract } from '@prisma/client';
 import { NotAuthorizedAppException } from 'src/shared/exceptions/NotAuthorizedAppException';
 import { BaseAppException } from 'src/shared/exceptions/BaseAppException';
+import { ForbiddenAppException } from 'src/shared/exceptions/ForbiddenAppException';
+import { addMillisecondsToCurrent } from 'src/shared/utils/time.utils';
 @Injectable()
 export class AuctionService {
   protected appConfig: ConfigType<typeof appConfiguration>;
@@ -49,6 +51,11 @@ export class AuctionService {
 
     if (!auction) {
       throw new NotFoundAppException(ResponseMessages.CONTRACT_NOT_FOUND);
+    }
+
+    // expire a bid
+    if (Date.now() > new Date(auction.expires_at).getTime()) {
+      throw new ForbiddenAppException(ResponseMessages.EXPIRED);
     }
 
     this.auction = auction;
@@ -104,6 +111,7 @@ export class AuctionService {
         },
       });
     } catch (e) {
+      this.appLogger.logError(e);
       if (e instanceof BaseAppException) {
         throw e;
       }
@@ -139,18 +147,48 @@ export class AuctionService {
     }
   }
 
-  async deployContract(args: DeployContractDto): Promise<string> {
+  async deployContract(args: DeployContractDto): Promise<Contract> {
     try {
-      // Compile the contract
-      const compiledContract = solc.compile(this.contractSource, 1);
-      const bytecode = compiledContract.contracts[':SimpleAuction'].bytecode;
-      const abi = JSON.parse(
-        compiledContract.contracts[':SimpleAuction'].interface,
+      const add = await this.web3.eth.accounts.wallet.add(
+        this.appConfig.ACCOUNT_PRIVATE_KEY,
       );
+      this.appLogger.logInfo('ERROR ===>>>', add);
+      const input = {
+        language: 'Solidity',
+        sources: {
+          'SimpleAuction.sol': {
+            content: this.contractSource,
+          },
+        },
+        settings: {
+          outputSelection: {
+            '*': {
+              '*': ['*'],
+            },
+          },
+        },
+      };
+
+      // const output = JSON.parse(solc.compile(JSON.stringify(input)));
+
+      //this.appLogger.logInfo('Options!!!!', output);
+
+      // Compile the contract
+      const compiledContract = JSON.parse(solc.compile(JSON.stringify(input)));
+      const metadata =
+        compiledContract.contracts['SimpleAuction.sol']['SimpleAuction']
+          .metadata;
+      this.appLogger.logInfo('MAIN!!!', JSON.parse(metadata).output.abi);
+      //const artifact = compiledContract.contracts['SimpleAuction'];
+      const bytecode =
+        compiledContract.contracts['SimpleAuction.sol']['SimpleAuction'].evm
+          .bytecode.object;
+      const abi = JSON.parse(metadata).output.abi;
 
       // Deploy the contract
       const accounts = await this.web3.eth.getAccounts();
       const contract = new this.web3.eth.Contract(abi);
+      this.appLogger.logInfo('accounts', accounts);
 
       const deployedContract = await contract
         .deploy({
@@ -158,17 +196,27 @@ export class AuctionService {
           arguments: [args.time, args.beneficiary],
         })
         .send({
-          from: accounts[0],
+          from: add[0].address,
           gas: '1500000',
           gasPrice: '30000000000',
         });
 
-      console.log(
+      this.appLogger.logInfo(
         'Contract deployed at address:',
         deployedContract.options.address,
       );
-      return deployedContract.options.address;
+
+      return this.prisma.contract.create({
+        data: {
+          user: { connect: { id: args.user_id } },
+          contract_address: deployedContract.options.address,
+          abi,
+          expires_at: addMillisecondsToCurrent(args.time),
+        },
+      });
+      // return deployedContract.options.address;
     } catch (e) {
+      this.appLogger.logError(e);
       if (e instanceof BaseAppException) {
         throw e;
       }

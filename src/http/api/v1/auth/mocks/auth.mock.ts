@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { hashString } from 'src/shared/utils/Hash';
+import { hashString } from 'src/shared/utils/hash.utils';
 
 export const mockUserLogin = {
   email: 'oluwafikayosanni@gmail.com',

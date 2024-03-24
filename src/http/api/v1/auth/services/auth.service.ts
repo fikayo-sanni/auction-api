@@ -3,13 +3,13 @@ import appConfiguration from 'src/config/envs/app.config';
 import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/services/users.service';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 import { User } from '@prisma/client';
 import { AuthSignUpDto } from '../dtos/auth.signup.dto';
 import { BadRequestAppException } from 'src/shared/exceptions/BadRequestAppException';
 import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { AuthSignInDto } from '../dtos/auth.signin.dto';
-import { hashString } from 'src/shared/utils/Hash';
+import { hashString } from 'src/shared/utils/hash.utils';
 import { UnAuthorizedAppException } from 'src/shared/exceptions/UnAuthorizedAppException';
 
 @Injectable()

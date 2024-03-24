@@ -1,4 +1,9 @@
-import { IsEthereumAddress, IsNumber } from 'class-validator';
+import {
+  IsEthereumAddress,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 
 export class DeployContractDto {
   @IsNumber()
@@ -6,4 +11,8 @@ export class DeployContractDto {
 
   @IsEthereumAddress()
   beneficiary: string;
+
+  @IsUUID()
+  @IsOptional()
+  user_id?: string;
 }

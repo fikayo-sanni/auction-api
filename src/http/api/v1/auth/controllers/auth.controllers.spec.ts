@@ -12,7 +12,7 @@ import {
 } from '../mocks/auth.mock';
 import { AuthRequest } from 'src/shared/types/auth.types';
 import { UsersService } from '../../users/services/users.service';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/services/prisma.service';
 

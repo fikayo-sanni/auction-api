@@ -8,6 +8,7 @@ export type ProcessEnv = {
   JWT_REFRESH_SECRET: string;
   NODE_PROVIDER_URL: string;
   CONTRACT_ADDRESS: string;
+  ACCOUNT_PRIVATE_KEY: string;
 };
 
 config({

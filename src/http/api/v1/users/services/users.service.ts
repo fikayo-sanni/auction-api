@@ -4,7 +4,7 @@ import { NotFoundAppException } from 'src/shared/exceptions/NotFoundAppException
 import { PrismaService } from 'src/prisma/services/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { ResponseMessages } from 'src/constants/ResponseMessages';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 import {
   IUserPaginationOptions,
   PaginationResult,
