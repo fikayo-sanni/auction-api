@@ -10,8 +10,9 @@ import Web3 from 'web3';
 import { AppLogger } from 'src/shared/utils/AppLogger';
 import { parseBigInts } from 'src/shared/utils/ParseBigInts';
 import * as solc from 'solc';
+//   import { AuctionAbi } from '../abis/auction.abi';
 import { DeployContractDto } from '../dtos/auction.deploy.dto';
-import { SimpleAuction } from '../contracts/SimpleAuction.contract';
+import { SimpleAuction } from '../contracts/auction.contract';
 
 @Injectable()
 export class AuctionService {
@@ -81,8 +82,10 @@ export class AuctionService {
   async deployContract(args: DeployContractDto): Promise<string> {
     // Compile the contract
     const compiledContract = solc.compile(this.contractSource, 1);
-    const bytecode = compiledContract.contracts[':MyContract'].bytecode;
-    const abi = JSON.parse(compiledContract.contracts[':MyContract'].interface);
+    const bytecode = compiledContract.contracts[':SimpleAuction'].bytecode;
+    const abi = JSON.parse(
+      compiledContract.contracts[':SimpleAuction'].interface,
+    );
 
     // Deploy the contract
     const accounts = await this.web3.eth.getAccounts();
