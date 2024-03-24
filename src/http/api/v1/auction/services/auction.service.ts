@@ -7,6 +7,8 @@ import { ServerAppException } from 'src/shared/exceptions/ServerAppException';
 import { AuctionContract, AuctionStatus } from 'src/shared/types/auction.types';
 import Web3 from 'web3';
 import { AuctionAbi } from '../abis/auction.abi';
+import { AppLogger } from 'src/shared/utils/AppLogger';
+import { parseBigInts } from 'src/shared/utils/ParseBigInts';
 
 @Injectable()
 export class AuctionService {
@@ -14,7 +16,7 @@ export class AuctionService {
   private readonly web3: Web3;
   private readonly contract: AuctionContract;
 
-  constructor() {
+  constructor(private readonly appLogger: AppLogger) {
     // this.contractAddress = this.appConfig.CONTRACT_ADDRESS
     this.appConfig = appConfiguration();
     this.web3 = new Web3(this.appConfig.NODE_PROVIDER_URL);
@@ -27,16 +29,21 @@ export class AuctionService {
 
   async getAuctionStatus(): Promise<AuctionStatus> {
     try {
-      const [beneficiary, auctionEndTime, highestBidder, highestBid, ended] =
+      const [beneficiary, auctionEndTime, highestBidder, highestBid] =
         await Promise.all([
           this.contract.methods.beneficiary().call(),
           this.contract.methods.auctionEndTime().call(),
           this.contract.methods.highestBidder().call(),
           this.contract.methods.highestBid().call(),
-          this.contract.methods.ended().call(),
         ]);
-      return { beneficiary, auctionEndTime, highestBidder, highestBid, ended };
+      return parseBigInts({
+        beneficiary,
+        auctionEndTime,
+        highestBidder,
+        highestBid,
+      }) as unknown as AuctionStatus;
     } catch (e) {
+      this.appLogger.logInfo(e);
       throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
     }
   }

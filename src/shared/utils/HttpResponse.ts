@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable, Scope } from '@nestjs/common';
 import { AppLogger } from './AppLogger';
-import { TranslatorService } from 'nestjs-translator';
 import { ModuleRef } from '@nestjs/core';
 import { ResponseStatusCodeConst } from '../../constants/ResponseStatusCodes';
 import { BaseAppException } from '../exceptions/BaseAppException';
@@ -12,10 +11,8 @@ import { ForbiddenAppException } from '../exceptions/ForbiddenAppException';
 @Injectable({ scope: Scope.TRANSIENT })
 export class HttpResponse {
   private readonly appLogger: AppLogger;
-  private readonly translator: TranslatorService;
   constructor(private readonly moduleRef: ModuleRef) {
     this.appLogger = this.moduleRef.get(AppLogger, { strict: false });
-    this.translator = this.moduleRef.get(TranslatorService, { strict: false });
   }
 
   //Vars
@@ -25,7 +22,6 @@ export class HttpResponse {
   private devMessage = '';
   private data: unknown = null;
   private dataKey = 'data';
-  private translateMessage = true;
 
   setMessage(message: string) {
     this.message = message;

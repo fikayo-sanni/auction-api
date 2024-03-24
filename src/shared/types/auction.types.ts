@@ -3,7 +3,7 @@ export interface AuctionStatus {
   auctionEndTime: number;
   highestBidder: string;
   highestBid: number;
-  ended: boolean;
+  // ended: boolean;
 }
 
 export interface BidEvent {
