@@ -3,7 +3,7 @@ export interface AuctionStatus {
   auctionEndTime: number;
   highestBidder: string;
   highestBid: number;
-  ended: boolean;
+  // ended: boolean;
 }
 
 export interface BidEvent {
@@ -11,15 +11,26 @@ export interface BidEvent {
   amount: number;
 }
 
+export interface ContractDeployment {
+  time: number;
+  beneficiary: string;
+}
+
+export interface TransactionSender {
+  from: string;
+  gas?: string;
+  gasPrice?: string;
+}
+
 export interface AuctionContract {
   methods: {
-    bid(): any;
+    bid(wallet: string): any;
     auctionEnd(): any;
     beneficiary(): any;
     auctionEndTime(): any;
     highestBidder(): any;
     highestBid(): any;
-    withdraw(): any;
+    withdraw(wallet: string): any;
     ended(): any;
   };
   events: {

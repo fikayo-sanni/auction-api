@@ -21,6 +21,44 @@ model User {
   lastname                      String?
   password                      String
   refresh_token                 String?
+  wallet_address                String?
+  contracts                     Contract[]
+  bids                          History[]
+  withdrawals                   Withdrawals[]
   created_at                    DateTime                       @default(now())
   updated_at                    DateTime?                      @updatedAt
+}
+
+// schema.prisma
+model Contract {
+  id                 String       @id @default(uuid()) // Assuming you want to use UUID as the primary key
+  user_id            String
+  user               User         @relation(fields: [user_id], references: [id])
+  bids               History[]
+  withdrawals        Withdrawals[]
+  abi                Json
+  contract_address   String
+  created_at         DateTime     @default(now())
+  expires_at         DateTime?
+  updated_at         DateTime     @updatedAt
+}
+
+
+model History {
+  id                 String       @id @default(uuid())
+  user_id            String
+  user               User         @relation(fields: [user_id], references: [id])
+  auction_id         String
+  auction            Contract     @relation(fields: [auction_id], references: [id])
+  bid                String
+  created_at         DateTime     @default(now())
+}
+
+model Withdrawals {
+  id                 String         @id   @default(uuid())
+  user_id            String
+  user               User           @relation(fields: [user_id], references: [id])
+  auction_id         String
+  auction            Contract       @relation(fields: [auction_id], references: [id])
+  created_at         DateTime       @default(now())
 }

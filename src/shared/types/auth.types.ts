@@ -4,3 +4,7 @@ export interface AuthRequest extends Request {
     sub: string;
   };
 }
+
+export interface JwtPayload {
+  sub: string;
+}

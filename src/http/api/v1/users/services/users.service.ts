@@ -4,7 +4,7 @@ import { NotFoundAppException } from 'src/shared/exceptions/NotFoundAppException
 import { PrismaService } from 'src/prisma/services/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { ResponseMessages } from 'src/constants/ResponseMessages';
-import { AppLogger } from 'src/shared/utils/AppLogger';
+import { AppLogger } from 'src/shared/utils/logger.utils';
 import {
   IUserPaginationOptions,
   PaginationResult,
@@ -19,7 +19,7 @@ export class UsersService {
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
     try {
-      return this.prisma.user.create({ data });
+      return await this.prisma.user.create({ data });
     } catch (e) {
       throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
     }
@@ -27,7 +27,16 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     try {
-      return this.prisma.user.findUnique({ where: { id } });
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        include: {
+          contracts: true,
+          bids: true,
+        },
+      });
+
+      // I am allowing refresh_token and password to be returned here
+      return user;
     } catch (e) {
       throw new NotFoundAppException(ResponseMessages.NOT_FOUND);
     }
@@ -35,9 +44,22 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User> {
     try {
-      return this.prisma.user.findUnique({ where: { email } });
+      const user = await this.prisma.user.findUnique({ where: { email } });
+
+      return user;
     } catch (e) {
       throw new NotFoundAppException(ResponseMessages.NOT_FOUND, e);
+    }
+  }
+
+  async addUserWallet(user_id: string, wallet_address: string): Promise<User> {
+    try {
+      /*const add = await this.web3.eth.accounts.wallet.add(
+        this.appConfig.ACCOUNT_PRIVATE_KEY,
+      );*/
+      return this.update({ id: user_id }, { wallet_address });
+    } catch (e) {
+      throw new ServerAppException(ResponseMessages.USER_UPDATE_FAILED, e);
     }
   }
 

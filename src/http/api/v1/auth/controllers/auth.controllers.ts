@@ -1,5 +1,5 @@
 import { BaseAppController } from 'src/http/api/base/base.controller';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthSignUpDto } from '../dtos/auth.signup.dto';
@@ -17,7 +17,6 @@ export class AuthController extends BaseAppController {
   @Post('register')
   public async signup(
     @Body(new CustomValidationPipe()) user: AuthSignUpDto,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     const result = await this.authService.signUp(user);
@@ -28,7 +27,6 @@ export class AuthController extends BaseAppController {
   @Post('login')
   public async signin(
     @Body(new CustomValidationPipe()) data: AuthSignInDto,
-    @Req() req: Request,
     @Res() res: Response,
   ) {
     const result = await this.authService.signIn(data);

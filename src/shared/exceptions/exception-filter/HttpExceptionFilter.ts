@@ -1,8 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { HttpResponse } from '../../utils/HttpResponse';
+import { HttpResponse } from '../../utils/http.utils';
 import { BaseAppException } from '../BaseAppException';
 import { ModuleRef } from '@nestjs/core';
-import { AppLogger } from '../../utils/AppLogger';
+import { AppLogger } from '../../utils/logger.utils';
 import { ValidationAppException } from '../ValidationAppException';
 import { get, isObject, isString, omit } from 'lodash';
 
