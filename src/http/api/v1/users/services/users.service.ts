@@ -27,8 +27,15 @@ export class UsersService {
 
   async findById(id: string): Promise<User> {
     try {
-      const user = await this.prisma.user.findUnique({ where: { id } });
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        include: {
+          contracts: true,
+          bids: true,
+        },
+      });
 
+      // I am allowing refresh_token and password to be returned here
       return user;
     } catch (e) {
       throw new NotFoundAppException(ResponseMessages.NOT_FOUND);
