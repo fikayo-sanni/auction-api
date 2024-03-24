@@ -11,7 +11,7 @@ export interface BidEvent {
   amount: number;
 }
 
-export interface ContractDeployment{
+export interface ContractDeployment {
   time: number;
   beneficiary: string;
 }
