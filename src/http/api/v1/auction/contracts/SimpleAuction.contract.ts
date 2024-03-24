@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+export const SimpleAuction = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 contract SimpleAuction {
@@ -81,4 +81,4 @@ contract SimpleAuction {
         // Transfer the winning bid amount to the beneficiary
         beneficiary.transfer(highestBid);
     }
-}
+}`;

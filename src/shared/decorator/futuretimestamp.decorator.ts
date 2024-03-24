@@ -5,28 +5,31 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-@ValidatorConstraint({ name: 'isTimestamp', async: false })
-export class IsTimestampConstraint implements ValidatorConstraintInterface {
+@ValidatorConstraint({ name: 'isFutureTimestamp', async: false })
+export class IsFutureTimestampConstraint
+  implements ValidatorConstraintInterface
+{
   validate(value: any): boolean {
     if (!value) {
       return false;
     }
-    return !isNaN(value) && new Date(value).getTime() > 0;
+    const currentTimestamp = Date.now();
+    return value > currentTimestamp;
   }
 
   defaultMessage(): string {
-    return 'Timestamp must be a valid number representing milliseconds since the Unix epoch.';
+    return 'Timestamp must be in the future.';
   }
 }
 
-export function IsTimestamp(validationOptions?: ValidationOptions) {
+export function IsFutureTimestamp(validationOptions?: ValidationOptions) {
   return function (object: unknown, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       constraints: [],
-      validator: IsTimestampConstraint,
+      validator: IsFutureTimestampConstraint,
     });
   };
 }

@@ -9,7 +9,10 @@ import Web3 from 'web3';
 // import { AuctionAbi } from '../abis/auction.abi';
 import { AppLogger } from 'src/shared/utils/AppLogger';
 import { parseBigInts } from 'src/shared/utils/ParseBigInts';
-import contractAsString from '../contracts/SimpleAuction.sol';
+import * as solc from 'solc';
+import * as fs from 'fs';
+import { DeployContractDto } from '../dtos/auction.deploy.dto';
+import { SimpleAuction } from '../contracts/SimpleAuction.contract';
 
 @Injectable()
 export class AuctionService {
@@ -28,7 +31,7 @@ export class AuctionService {
       this.appConfig.CONTRACT_ADDRESS,
     ) as unknown as AuctionContract;*/
 
-    this.contractSource = myContractSource;
+    this.contractSource = SimpleAuction;
   }
 
   async getAuctionStatus(): Promise<AuctionStatus> {
@@ -74,5 +77,33 @@ export class AuctionService {
     } catch (e) {
       throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
     }
+  }
+
+  async deployContract(args: DeployContractDto): Promise<string> {
+    // Compile the contract
+    const compiledContract = solc.compile(this.contractSource, 1);
+    const bytecode = compiledContract.contracts[':MyContract'].bytecode;
+    const abi = JSON.parse(compiledContract.contracts[':MyContract'].interface);
+
+    // Deploy the contract
+    const accounts = await this.web3.eth.getAccounts();
+    const contract = new this.web3.eth.Contract(abi);
+
+    const deployedContract = await contract
+      .deploy({
+        data: '0x' + bytecode,
+        arguments: [args.time, args.beneficiary],
+      })
+      .send({
+        from: accounts[0],
+        gas: '1500000',
+        gasPrice: '30000000000',
+      });
+
+    console.log(
+      'Contract deployed at address:',
+      deployedContract.options.address,
+    );
+    return deployedContract.options.address;
   }
 }
