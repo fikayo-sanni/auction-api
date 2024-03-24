@@ -7,7 +7,7 @@ export type ProcessEnv = {
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
   NODE_PROVIDER_URL: string;
-  CONTRACT_ADDRESS: string;
+  INFURA_PROJECT_ID: string;
   ACCOUNT_PRIVATE_KEY: string;
 };
 
