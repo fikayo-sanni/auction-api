@@ -179,13 +179,14 @@ export class AuctionService {
       if (this.auction.user_id !== user_id) {
         throw new NotAuthorizedAppException(ResponseMessages.ACCESS_DENIED);
       }
-      await this.contract.methods.auctionEnd().send();
+      await this.contract.methods.auctionEnd().send(await this.getSenderInfo());
 
       await this.prisma.contract.update({
         where: { id: auction_id },
         data: { expires_at: new Date() },
       });
     } catch (e) {
+      this.appLogger.logError(e);
       if (e instanceof BaseAppException) {
         throw e;
       }
