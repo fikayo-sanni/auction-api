@@ -34,6 +34,16 @@ export class AuctionController extends BaseAppController {
     return this.getHttpResponse().setDataWithKey('data', result).send(res);
   }
 
+  @Get(':auction_id/history')
+  async getAuctionHistory(
+    @Param('auction_id') auction_id: string,
+    @Req() req: AuthRequest,
+    @Res() res: Response,
+  ): Promise<any> {
+    const result = await this.auctionService.getAuctionHistory(auction_id);
+    return this.getHttpResponse().setDataWithKey('data', result).send(res);
+  }
+
   @Post(':auction_id/end')
   async endAuction(
     @Param('auction_id') auction_id: string,
@@ -82,7 +92,7 @@ export class AuctionController extends BaseAppController {
     @Req() req: AuthRequest,
     @Res() res: Response,
   ) {
-    const result = await this.auctionService.withdraw(auction_id);
+    const result = await this.auctionService.withdraw(auction_id, req.user.sub);
     return this.getHttpResponse().setDataWithKey('data', result).send(res);
   }
 }

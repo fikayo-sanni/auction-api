@@ -126,6 +126,23 @@ export class AuctionService {
     }
   }
 
+  async getAuctionHistory(auction_id: string) {
+    try {
+      return this.prisma.contract.findUnique({
+        where: { id: auction_id },
+        include: {
+          bids: true,
+          withdrawals: true,
+        },
+      });
+    } catch (e) {
+      if (e instanceof BaseAppException) {
+        throw e;
+      }
+      throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
+    }
+  }
+
   async submitBid(
     auction_id: string,
     user_id: string,
@@ -163,6 +180,11 @@ export class AuctionService {
         throw new NotAuthorizedAppException(ResponseMessages.ACCESS_DENIED);
       }
       await this.contract.methods.auctionEnd().send();
+
+      await this.prisma.contract.update({
+        where: { id: auction_id },
+        data: { expires_at: new Date() },
+      });
     } catch (e) {
       if (e instanceof BaseAppException) {
         throw e;
@@ -171,10 +193,21 @@ export class AuctionService {
     }
   }
 
-  async withdraw(auction_id: string): Promise<void> {
+  async withdraw(auction_id: string, user_id: string): Promise<void> {
     try {
       await this.initiateContract(auction_id);
-      await this.contract.methods.withdraw().send();
+      await this.contract.methods
+        .withdraw(await this.fetchUserWallet(user_id))
+        .send(await this.getSenderInfo());
+
+      await this.prisma.withdrawals.create({
+        data: {
+          user: {
+            connect: { id: user_id },
+          },
+          auction: { connect: { id: auction_id } },
+        },
+      });
     } catch (e) {
       if (e instanceof BaseAppException) {
         throw e;

@@ -30,7 +30,7 @@ export interface AuctionContract {
     auctionEndTime(): any;
     highestBidder(): any;
     highestBid(): any;
-    withdraw(): any;
+    withdraw(wallet: string): any;
     ended(): any;
   };
   events: {
