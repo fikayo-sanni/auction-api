@@ -2,6 +2,7 @@ export enum ResponseMessages {
   SOMETHING_WENT_WRONG = 'something_went_wrong',
   ACCESS_DENIED = 'access_denied',
   NOT_FOUND = 'not_found_error',
+  WALLET_NOT_FOUND = 'wallet_not_found_error',
   CONTRACT_NOT_FOUND = 'contract_not_found_error',
   INVALID_REQUEST_DATA = 'invalid_request_data',
   EXPIRED = 'resource_has_expired',

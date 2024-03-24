@@ -30,7 +30,7 @@ contract SimpleAuction {
     }
 
     // Function for participants to place bids
-    function bid() public payable {
+    function bid(address payable participant) public payable {
         // Auction must not have ended
         require(block.timestamp <= auctionEndTime, "Auction already ended");
         // Bid amount must be higher than the current highest bid
@@ -42,25 +42,25 @@ contract SimpleAuction {
         }
         
         // Update highest bidder and highest bid amount
-        highestBidder = msg.sender;
+        highestBidder = participant;
         highestBid = msg.value;
         // Emit event to log the new highest bid
-        emit HighestBidIncreased(msg.sender, msg.value);
+        emit HighestBidIncreased(participant, msg.value);
     }
 
     // Function for participants to withdraw their pending returns
-    function withdraw() public returns (bool) {
+    function withdraw(address payable participant) public returns (bool) {
         // Retrieve the amount pending for withdrawal
-        uint amount = pendingReturns[msg.sender];
+        uint amount = pendingReturns[participant];
         // If there's an amount pending
         if (amount > 0) {
             // Reset the pending amount
-            pendingReturns[msg.sender] = 0;
+            pendingReturns[participant] = 0;
 
             // Transfer the pending amount to the participant
-            if (!payable(msg.sender).send(amount)) {
+            if (!payable(participant).send(amount)) {
                 // If the transfer fails, restore the pending amount and return false
-                pendingReturns[msg.sender] = amount;
+                pendingReturns[participant] = amount;
                 return false;
             }
         }

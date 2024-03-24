@@ -16,9 +16,15 @@ export interface ContractDeployment {
   beneficiary: string;
 }
 
+export interface TransactionSender {
+  from: string;
+  gas?: string;
+  gasPrice?: string;
+}
+
 export interface AuctionContract {
   methods: {
-    bid(): any;
+    bid(wallet: string): any;
     auctionEnd(): any;
     beneficiary(): any;
     auctionEndTime(): any;

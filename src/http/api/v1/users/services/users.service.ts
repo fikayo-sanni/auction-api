@@ -52,6 +52,17 @@ export class UsersService {
     }
   }
 
+  async addUserWallet(user_id: string, wallet_address: string): Promise<User> {
+    try {
+      /*const add = await this.web3.eth.accounts.wallet.add(
+        this.appConfig.ACCOUNT_PRIVATE_KEY,
+      );*/
+      return this.update({ id: user_id }, { wallet_address });
+    } catch (e) {
+      throw new ServerAppException(ResponseMessages.USER_UPDATE_FAILED, e);
+    }
+  }
+
   async update(
     where: Prisma.UserWhereUniqueInput,
     updateUserDto: Partial<Prisma.UserCreateInput>,

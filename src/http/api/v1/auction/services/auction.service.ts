@@ -4,7 +4,11 @@ import appConfiguration from 'src/config/envs/app.config';
 import { ConfigType } from '@nestjs/config';
 import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { ServerAppException } from 'src/shared/exceptions/ServerAppException';
-import { AuctionContract, AuctionStatus } from 'src/shared/types/auction.types';
+import {
+  AuctionContract,
+  AuctionStatus,
+  TransactionSender,
+} from 'src/shared/types/auction.types';
 import Web3, { ContractAbi } from 'web3';
 // import { AuctionAbi } from '../abis/auction.abi';
 import { AppLogger } from 'src/shared/utils/logger.utils';
@@ -20,6 +24,7 @@ import { NotAuthorizedAppException } from 'src/shared/exceptions/NotAuthorizedAp
 import { BaseAppException } from 'src/shared/exceptions/BaseAppException';
 import { ForbiddenAppException } from 'src/shared/exceptions/ForbiddenAppException';
 import { addMillisecondsToCurrent } from 'src/shared/utils/time.utils';
+import { UsersService } from '../../users/services/users.service';
 @Injectable()
 export class AuctionService {
   protected appConfig: ConfigType<typeof appConfiguration>;
@@ -31,16 +36,10 @@ export class AuctionService {
   constructor(
     private readonly appLogger: AppLogger,
     private readonly prisma: PrismaService,
+    private readonly userService: UsersService,
   ) {
-    // this.contractAddress = this.appConfig.CONTRACT_ADDRESS
     this.appConfig = appConfiguration();
     this.web3 = new Web3(this.appConfig.NODE_PROVIDER_URL);
-    // const abi = AuctionAbi;
-    /*this.contract = new this.web3.eth.Contract(
-      abi,
-      this.appConfig.CONTRACT_ADDRESS,
-    ) as unknown as AuctionContract;*/
-
     this.contractSource = SimpleAuction;
   }
 
@@ -66,6 +65,40 @@ export class AuctionService {
       abi,
       address,
     ) as unknown as AuctionContract;
+  }
+
+  async getSenderInfo(): Promise<TransactionSender> {
+    try {
+      const add = await this.web3.eth.accounts.wallet.add(
+        this.appConfig.ACCOUNT_PRIVATE_KEY,
+      );
+
+      return {
+        from: add[0].address,
+      };
+    } catch (e) {
+      if (e instanceof BaseAppException) {
+        throw e;
+      }
+      throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
+    }
+  }
+
+  async fetchUserWallet(user_id: string): Promise<string> {
+    try {
+      const user = await this.userService.findById(user_id);
+
+      if (!user || !user.wallet_address) {
+        throw new NotFoundAppException(ResponseMessages.WALLET_NOT_FOUND);
+      }
+
+      return user.wallet_address;
+    } catch (e) {
+      if (e instanceof BaseAppException) {
+        throw e;
+      }
+      throw new ServerAppException(ResponseMessages.SOMETHING_WENT_WRONG, e);
+    }
   }
 
   async getAuctionStatus(auction_id: string): Promise<AuctionStatus> {
@@ -100,7 +133,10 @@ export class AuctionService {
   ): Promise<void> {
     try {
       await this.initiateContract(auction_id);
-      await this.contract.methods.bid().send({ value: amount });
+      const wallet_address = await this.fetchUserWallet(user_id);
+      await this.contract.methods
+        .bid(wallet_address)
+        .send({ value: amount, ...(await this.getSenderInfo()) });
       await this.prisma.history.create({
         data: {
           bid: String(amount),
@@ -149,10 +185,6 @@ export class AuctionService {
 
   async deployContract(args: DeployContractDto): Promise<Contract> {
     try {
-      const add = await this.web3.eth.accounts.wallet.add(
-        this.appConfig.ACCOUNT_PRIVATE_KEY,
-      );
-      this.appLogger.logInfo('ERROR ===>>>', add);
       const input = {
         language: 'Solidity',
         sources: {
@@ -169,17 +201,11 @@ export class AuctionService {
         },
       };
 
-      // const output = JSON.parse(solc.compile(JSON.stringify(input)));
-
-      //this.appLogger.logInfo('Options!!!!', output);
-
       // Compile the contract
       const compiledContract = JSON.parse(solc.compile(JSON.stringify(input)));
       const metadata =
         compiledContract.contracts['SimpleAuction.sol']['SimpleAuction']
           .metadata;
-      this.appLogger.logInfo('MAIN!!!', JSON.parse(metadata).output.abi);
-      //const artifact = compiledContract.contracts['SimpleAuction'];
       const bytecode =
         compiledContract.contracts['SimpleAuction.sol']['SimpleAuction'].evm
           .bytecode.object;
@@ -196,15 +222,10 @@ export class AuctionService {
           arguments: [args.time, args.beneficiary],
         })
         .send({
-          from: add[0].address,
+          ...(await this.getSenderInfo()),
           gas: '1500000',
           gasPrice: '30000000000',
         });
-
-      this.appLogger.logInfo(
-        'Contract deployed at address:',
-        deployedContract.options.address,
-      );
 
       return this.prisma.contract.create({
         data: {

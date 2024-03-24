@@ -6,13 +6,14 @@ import { SharedModule } from 'src/shared/shared.module';
 import { AuthModule } from '../auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/services/prisma.service';
+import { UsersService } from '../users/services/users.service';
 
 const providers = [AuctionService];
 
 @Module({
   imports: [SharedModule, AuthModule, JwtModule.register({})],
   controllers: [AuctionController],
-  providers: [...providers, AppLogger, PrismaService],
+  providers: [...providers, AppLogger, PrismaService, UsersService],
   exports: providers,
 })
 @Global()
