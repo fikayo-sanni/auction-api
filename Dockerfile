@@ -12,5 +12,5 @@ RUN yarn install
 COPY --chown=node:node . .
 # build application in the current working directory
 RUN yarn build
-EXPOSE 3000
+EXPOSE 8080
 CMD [ "sh", "-c", "yarn start:prod"]
