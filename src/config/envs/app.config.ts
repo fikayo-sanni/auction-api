@@ -13,7 +13,7 @@ const getAppConfig = () => {
     JWT_SECRET: String(processEnvObj.JWT_SECRET),
     JWT_REFRESH_SECRET: String(processEnvObj.JWT_REFRESH_SECRET),
     NODE_PROVIDER_URL: String(processEnvObj.NODE_PROVIDER_URL),
-    CONTRACT_ADDRESS: String(processEnvObj.CONTRACT_ADDRESS),
+    INFURA_PROJECT_ID: String(processEnvObj.INFURA_PROJECT_ID),
     ACCOUNT_PRIVATE_KEY: String(processEnvObj.ACCOUNT_PRIVATE_KEY),
   };
 };

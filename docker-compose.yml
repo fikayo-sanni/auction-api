@@ -8,9 +8,10 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=
+      - JWT_SECRET=
+      - JWT_REFRESH_SECRET=
       - DATABASE_URL=
       - INFURA_PROJECT_ID=
       - ACCOUNT_PRIVATE_KEY=
-      - CONTRACT_ADDRESS=
       - NODE_PROVIDER_URL=

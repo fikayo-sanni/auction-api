@@ -39,7 +39,9 @@ export class AuctionService {
     private readonly userService: UsersService,
   ) {
     this.appConfig = appConfiguration();
-    this.web3 = new Web3(this.appConfig.NODE_PROVIDER_URL);
+    this.web3 = new Web3(
+      `${this.appConfig.NODE_PROVIDER_URL}${this.appConfig.INFURA_PROJECT_ID}`,
+    );
     this.contractSource = SimpleAuction;
   }
 
