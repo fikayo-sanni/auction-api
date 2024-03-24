@@ -10,7 +10,6 @@ import Web3 from 'web3';
 import { AppLogger } from 'src/shared/utils/AppLogger';
 import { parseBigInts } from 'src/shared/utils/ParseBigInts';
 import * as solc from 'solc';
-import * as fs from 'fs';
 import { DeployContractDto } from '../dtos/auction.deploy.dto';
 import { SimpleAuction } from '../contracts/SimpleAuction.contract';
 

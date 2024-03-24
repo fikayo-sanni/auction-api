@@ -1,10 +1,7 @@
-import { IsEthereumAddress } from 'class-validator';
-import { IsFutureTimestamp } from 'src/shared/decorator/futuretimestamp.decorator';
-import { IsTimestamp } from 'src/shared/decorator/timestamp.decorator';
+import { IsEthereumAddress, IsNumber } from 'class-validator';
 
 export class DeployContractDto {
-  @IsTimestamp()
-  @IsFutureTimestamp()
+  @IsNumber()
   time: number;
 
   @IsEthereumAddress()
