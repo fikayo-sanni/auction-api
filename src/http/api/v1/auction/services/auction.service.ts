@@ -6,6 +6,7 @@ import { ResponseMessages } from 'src/constants/ResponseMessages';
 import { ServerAppException } from 'src/shared/exceptions/ServerAppException';
 import {
   AuctionContract,
+  AuctionStatistics,
   AuctionStatus,
   TransactionSender,
 } from 'src/shared/types/auction.types';
