@@ -11,7 +11,7 @@ The above project was implemented using the nestjs framework. There are 2 main w
 
 ### Creating a .env file
 
-Start by creating a .env file, a good example can be found in the .env.example file provided in the root folder. It provides a good overview and description of the required variables
+Start by creating a .env file, a good example can be found in the .env.example file provided in the root folder. It provides a good overview and description of the required variables.
 
 ### Installation
 
@@ -22,6 +22,9 @@ $ yarn install
 ### Running the app
 
 ```bash
+# run migrations
+yarn db:generate:migrations
+
 # development
 $ yarn run start
 
