@@ -8,10 +8,10 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=
-      - JWT_SECRET=
-      - JWT_REFRESH_SECRET=
-      - DATABASE_URL=
-      - INFURA_PROJECT_ID=
-      - ACCOUNT_PRIVATE_KEY=
-      - NODE_PROVIDER_URL=
+      - NODE_ENV=production
+      - JWT_SECRET=SECRET
+      - JWT_REFRESH_SECRET=REFRESH_SECRET
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/auction-api
+      - INFURA_PROJECT_ID=24bf2c72d34d47f7b1dc77a958bc25df
+      - ACCOUNT_PRIVATE_KEY=0xe48f2E87f5535ABE82b499E2a501Ce207231cEdA
+      - NODE_PROVIDER_URL=https://sepolia.infura.io/v3/

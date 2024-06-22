@@ -14,7 +14,7 @@ import Web3, { ContractAbi } from 'web3';
 // import { AuctionAbi } from '../abis/auction.abi';
 import { AppLogger } from 'src/shared/utils/logger.utils';
 import { parseBigInts } from 'src/shared/utils/parser.utils';
-import * as solc from 'solc';
+// import * as solc from 'solc';
 //   import { AuctionAbi } from '../abis/auction.abi';
 import { DeployContractDto } from '../dtos/auction.deploy.dto';
 import { SimpleAuction } from '../contracts/auction.contract';
@@ -24,7 +24,7 @@ import { Contract } from '@prisma/client';
 import { NotAuthorizedAppException } from 'src/shared/exceptions/NotAuthorizedAppException';
 import { BaseAppException } from 'src/shared/exceptions/BaseAppException';
 import { ForbiddenAppException } from 'src/shared/exceptions/ForbiddenAppException';
-import { addMillisecondsToCurrent } from 'src/shared/utils/time.utils';
+// import { addMillisecondsToCurrent } from 'src/shared/utils/time.utils';
 import { UsersService } from '../../users/services/users.service';
 @Injectable()
 export class AuctionService {
@@ -253,7 +253,8 @@ export class AuctionService {
 
   async deployContract(args: DeployContractDto): Promise<Contract> {
     try {
-      const input = {
+      console.log(args);
+      /*const input = {
         language: 'Solidity',
         sources: {
           'SimpleAuction.sol': {
@@ -302,10 +303,154 @@ export class AuctionService {
           abi,
           expires_at: addMillisecondsToCurrent(args.time),
         },
-      });
+      });*/
       // return deployedContract.options.address;
+
+      return {
+        id: '64b6e018-2b40-4604-b5cf-967b8b95a154',
+        user_id: '0aa23b40-2ba0-4162-a96d-461002f8005e',
+        abi: [
+          {
+            type: 'constructor',
+            inputs: [
+              {
+                name: '_biddingTime',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+              {
+                name: '_beneficiary',
+                type: 'address',
+                internalType: 'address payable',
+              },
+            ],
+            stateMutability: 'nonpayable',
+          },
+          {
+            name: 'AuctionEnded',
+            type: 'event',
+            inputs: [
+              {
+                name: 'winner',
+                type: 'address',
+                indexed: false,
+                internalType: 'address',
+              },
+              {
+                name: 'amount',
+                type: 'uint256',
+                indexed: false,
+                internalType: 'uint256',
+              },
+            ],
+            anonymous: false,
+          },
+          {
+            name: 'HighestBidIncreased',
+            type: 'event',
+            inputs: [
+              {
+                name: 'bidder',
+                type: 'address',
+                indexed: false,
+                internalType: 'address',
+              },
+              {
+                name: 'amount',
+                type: 'uint256',
+                indexed: false,
+                internalType: 'uint256',
+              },
+            ],
+            anonymous: false,
+          },
+          {
+            name: 'auctionEnd',
+            type: 'function',
+            inputs: [],
+            outputs: [],
+            stateMutability: 'nonpayable',
+          },
+          {
+            name: 'auctionEndTime',
+            type: 'function',
+            inputs: [],
+            outputs: [
+              {
+                name: '',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+            ],
+            stateMutability: 'view',
+          },
+          {
+            name: 'beneficiary',
+            type: 'function',
+            inputs: [],
+            outputs: [
+              {
+                name: '',
+                type: 'address',
+                internalType: 'address payable',
+              },
+            ],
+            stateMutability: 'view',
+          },
+          {
+            name: 'bid',
+            type: 'function',
+            inputs: [],
+            outputs: [],
+            stateMutability: 'payable',
+          },
+          {
+            name: 'highestBid',
+            type: 'function',
+            inputs: [],
+            outputs: [
+              {
+                name: '',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+            ],
+            stateMutability: 'view',
+          },
+          {
+            name: 'highestBidder',
+            type: 'function',
+            inputs: [],
+            outputs: [
+              {
+                name: '',
+                type: 'address',
+                internalType: 'address',
+              },
+            ],
+            stateMutability: 'view',
+          },
+          {
+            name: 'withdraw',
+            type: 'function',
+            inputs: [],
+            outputs: [
+              {
+                name: '',
+                type: 'bool',
+                internalType: 'bool',
+              },
+            ],
+            stateMutability: 'nonpayable',
+          },
+        ],
+        contract_address: '0x5AF6B088D20446B3f36F77FCa54Fd854feA6Abb0',
+        created_at: new Date('2024-03-24T16:37:01.648Z'),
+        expires_at: new Date('2024-03-25T06:30:21.644Z'),
+        updated_at: new Date('2024-03-24T16:37:01.648Z'),
+      };
     } catch (e) {
-      this.appLogger.logError(e);
+      console.log('Jumbo!!!', e);
       if (e instanceof BaseAppException) {
         throw e;
       }
